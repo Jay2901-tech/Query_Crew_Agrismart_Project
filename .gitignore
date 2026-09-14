@@ -32,10 +32,6 @@ share/python-wheels/
 data/
 plantvillage_master.zip
 temp_plantvillage_extract/
-model/weights/
-*.pth
-*.pt
-*.onnx
 
 # IDE and OS
 .vscode/
