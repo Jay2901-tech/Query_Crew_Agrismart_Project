@@ -1,0 +1,62 @@
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data and Models
+data/
+plantvillage_master.zip
+temp_plantvillage_extract/
+model/weights/
+*.pth
+*.pt
+*.onnx
+
+# IDE and OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Experiment Tracking
+wandb/
+mlruns/
+.agents
+
+# Streamlit
+.streamlit/secrets.toml
+.streamlit/
+
+# Test Images
+*.jpg
+*.jpeg
+*.png
+!assets/
+!media/

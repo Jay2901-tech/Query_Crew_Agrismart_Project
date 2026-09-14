@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  agrismart-api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config:/app/config:ro
+      - ./model/weights:/app/model/weights:ro
+      - ./src:/app/src:ro
+    environment:
+      - WANDB_API_KEY=${WANDB_API_KEY}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
