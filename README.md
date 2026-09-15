@@ -7,7 +7,7 @@ An AI-powered smart agriculture advisor dashboard built for smallholder farmers.
 ## 📹 Video Demonstration & Live Demo
 
 - **Application Live Dashboard**: Deployable on Render / Streamlit Cloud
-- **Video Walkthrough**: A complete video demonstration showcasing image leaf isolation, MobileNetV2 disease diagnosis, Open-Meteo live weather integration, smart irrigation alerts, and multilingual voice audio readout in Hindi & Gujarati.
+- **Video Walkthrough (`Agrismart_AI.mp4`)**: A complete video demonstration showcasing image leaf isolation, MobileNetV2 disease diagnosis, Open-Meteo live weather integration, smart irrigation alerts, and multilingual voice audio readout in Hindi & Gujarati. The video file `Agrismart_AI.mp4` is located in the local project directory for evaluators.
 
 ---
 
@@ -123,6 +123,7 @@ TARGET_CLASSES = [
 Query_Crew/
 ├── README.md               # Project documentation, highlights, and run instructions
 ├── Agrismart_AI_Report.docx # Model training report, augmentation & confusion matrix charts
+├── Agrismart_AI.mp4        # Video demonstration walkthrough (362MB)
 ├── requirements.txt        # Python package dependencies (uv and pip supported)
 ├── app.py                  # Main Streamlit dashboard UI entry point
 ├── render.yaml             # Render.com deployment blueprint
