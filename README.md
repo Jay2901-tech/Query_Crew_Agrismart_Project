@@ -11,6 +11,20 @@ An AI-powered smart agriculture advisor dashboard built for smallholder farmers.
 
 ---
 
+## 📸 Application Interface & Workflow Screenshots
+
+| Step 1: Upload Plant Leaf Image | Step 2: Multi-Leaf Detection & Segmentation |
+| :---: | :---: |
+| ![Upload Interface](assets/01_upload_interface.png) | ![Leaf Segmentation](assets/02_leaf_segmentation.png) |
+| *Upload leaf photo with farm location parameters* | *Isolates individual leaves (9 detected) using HSV/YOLO* |
+
+| Step 3: Disease Classification & IoT Sensor Metrics | Step 4: Smart Advisories & Sustainability Score |
+| :---: | :---: |
+| ![Disease Diagnosis & IoT](assets/03_disease_diagnosis_iot.png) | ![Advisories & Sustainability](assets/04_advisories_sustainability.png) |
+| *MobileNetV2 disease diagnosis (Apple Scab) + live IoT readings* | *Weather-correlated irrigation delay + Sustainability score (91/100)* |
+
+---
+
 ## 🌟 Key Highlights & Advantages
 
 1. **Multilingual Regional Voice Assistant (Sarvam AI + gTTS)**:
@@ -37,17 +51,89 @@ An AI-powered smart agriculture advisor dashboard built for smallholder farmers.
 
 ---
 
+## 🌿 Trained Crop & Plant Disease Classes (24 Target Classes)
+
+The MobileNetV2 model is trained to recognize **24 target classes** derived from the PlantVillage dataset across 12 distinct crop categories:
+
+| Index | Raw Target Class Name | Crop | Health Condition / Disease | Clean Display Name |
+| :---: | :--- | :--- | :--- | :--- |
+| `0` | `Apple___Apple_scab` | Apple | Apple Scab | Apple - Apple scab |
+| `1` | `Apple___healthy` | Apple | Healthy | Apple - healthy |
+| `2` | `Blueberry___healthy` | Blueberry | Healthy | Blueberry - healthy |
+| `3` | `Cherry_(including_sour)___healthy` | Cherry | Healthy | Cherry (including sour) - healthy |
+| `4` | `Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot` | Corn | Cercospora / Gray Leaf Spot | Corn (maize) - Cercospora leaf spot Gray leaf spot |
+| `5` | `Corn_(maize)___Common_rust_` | Corn | Common Rust | Corn (maize) - Common rust |
+| `6` | `Grape___Black_rot` | Grape | Black Rot | Grape - Black rot |
+| `7` | `Grape___healthy` | Grape | Healthy | Grape - healthy |
+| `8` | `Peach___healthy` | Peach | Healthy | Peach - healthy |
+| `9` | `Pepper,_bell___healthy` | Pepper (Bell) | Healthy | Pepper bell - healthy |
+| `10` | `Potato___Early_blight` | Potato | Early Blight | Potato - Early blight |
+| `11` | `Potato___Late_blight` | Potato | Late Blight | Potato - Late blight |
+| `12` | `Raspberry___healthy` | Raspberry | Healthy | Raspberry - healthy |
+| `13` | `Soybean___healthy` | Soybean | Healthy | Soybean - healthy |
+| `14` | `Squash___Powdery_mildew` | Squash | Powdery Mildew | Squash - Powdery mildew |
+| `15` | `Strawberry___healthy` | Strawberry | Healthy | Strawberry - healthy |
+| `16` | `Tomato___Bacterial_spot` | Tomato | Bacterial Spot | Tomato - Bacterial spot |
+| `17` | `Tomato___Early_blight` | Tomato | Early Blight | Tomato - Early blight |
+| `18` | `Tomato___Late_blight` | Tomato | Late Blight | Tomato - Late blight |
+| `19` | `Tomato___Leaf_Mold` | Tomato | Leaf Mold | Tomato - Leaf Mold |
+| `20` | `Tomato___Septoria_leaf_spot` | Tomato | Septoria Leaf Spot | Tomato - Septoria leaf spot |
+| `21` | `Tomato___Tomato_Yellow_Leaf_Curl_Virus` | Tomato | Yellow Leaf Curl Virus | Tomato - Tomato Yellow Leaf Curl Virus |
+| `22` | `Tomato___Tomato_mosaic_virus` | Tomato | Mosaic Virus | Tomato - Tomato mosaic virus |
+| `23` | `Tomato___healthy` | Tomato | Healthy | Tomato - healthy |
+
+<details>
+<summary><b>Click to view raw Python array definition (<code>TARGET_CLASSES</code>)</b></summary>
+
+```python
+TARGET_CLASSES = [
+    "Apple___Apple_scab",
+    "Apple___healthy",
+    "Blueberry___healthy",
+    "Cherry_(including_sour)___healthy",
+    "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot",
+    "Corn_(maize)___Common_rust_",
+    "Grape___Black_rot",
+    "Grape___healthy",
+    "Peach___healthy",
+    "Pepper,_bell___healthy",
+    "Potato___Early_blight",
+    "Potato___Late_blight",
+    "Raspberry___healthy",
+    "Soybean___healthy",
+    "Squash___Powdery_mildew",
+    "Strawberry___healthy",
+    "Tomato___Bacterial_spot",
+    "Tomato___Early_blight",
+    "Tomato___Late_blight",
+    "Tomato___Leaf_Mold",
+    "Tomato___Septoria_leaf_spot",
+    "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+    "Tomato___Tomato_mosaic_virus",
+    "Tomato___healthy"
+]
+```
+</details>
+
+---
+
 ## 📁 Repository Structure
 
 ```text
 Query_Crew/
 ├── README.md               # Project documentation, highlights, and run instructions
+├── Agrismart_AI_Report.docx # Model training report, augmentation & confusion matrix charts
 ├── requirements.txt        # Python package dependencies (uv and pip supported)
 ├── app.py                  # Main Streamlit dashboard UI entry point
 ├── render.yaml             # Render.com deployment blueprint
 ├── download_models.py      # Weights downloader script (auto-detects uv or pip)
 ├── agent.py                # Headless autonomous decision loop test runner (Module G)
 ├── debug_pipeline.py       # Diagnostic CV model test script
+├── assets/                 # Application workflow screenshots & UI diagrams
+│   ├── 01_upload_interface.png
+│   ├── 02_leaf_segmentation.png
+│   ├── 03_disease_diagnosis_iot.png
+│   └── 04_advisories_sustainability.png
 ├── src/                    # Core application modular source code
 │   ├── predict.py          # MobileNetV2 disease classification inference interface
 │   ├── cv_utils.py         # OpenCV HSV leaf isolation & green-channel extraction

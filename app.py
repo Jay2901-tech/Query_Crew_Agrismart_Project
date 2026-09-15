@@ -31,11 +31,20 @@ from src.sustainability import sustainability_score
 # Sarvam Translation Layer (Configurable via ENV / Secrets or fallback)
 # ---------------------------------------------------------------------------
 _DEFAULT_SARVAM_KEY = "sk_49k3bz3i_nIiaXKsIzySEDGkS3rbcYSpD"
-SARVAM_API_KEY = os.environ.get(
-    "SARVAM_API_KEY",
-    st.secrets.get("SARVAM_API_KEY", _DEFAULT_SARVAM_KEY) if hasattr(st, "secrets") else _DEFAULT_SARVAM_KEY
-)
+
+def _resolve_sarvam_key() -> str:
+    if os.environ.get("SARVAM_API_KEY"):
+        return os.environ["SARVAM_API_KEY"]
+    try:
+        if "SARVAM_API_KEY" in st.secrets:
+            return st.secrets["SARVAM_API_KEY"]
+    except Exception:
+        pass
+    return _DEFAULT_SARVAM_KEY
+
+SARVAM_API_KEY = _resolve_sarvam_key()
 SARVAM_ENDPOINT = "https://api.sarvam.ai/translate"
+IS_SARVAM_CONFIGURED = bool(SARVAM_API_KEY and SARVAM_API_KEY.strip() and not SARVAM_API_KEY.startswith("YOUR_"))
 
 # Maps our lang codes → Sarvam BCP-47 codes
 SARVAM_LANG_MAP = {
@@ -247,17 +256,22 @@ if "_lang_code"        not in st.session_state: st.session_state["_lang_code"]  
 # Sidebar
 # ---------------------------------------------------------------------------
 selected_lang = st.sidebar.selectbox("🌐 Choose Language / भाषा चुनें", list(LANGUAGES.keys()))
+
+# If API key is not configured or translation disabled due to error
+if not IS_SARVAM_CONFIGURED or st.session_state.get("_sarvam_disabled"):
+    if selected_lang != "English":
+        st.sidebar.warning("⚠️ API key not configured. Translation is unavailable. Defaulting to English.")
+        selected_lang = "English"
+    elif st.session_state.get("_sarvam_disabled"):
+        st.sidebar.warning(st.session_state.get(
+            "_sarvam_error_msg",
+            "⚠️ Translation unavailable. Showing content in English."
+        ))
+
 lang = LANGUAGES[selected_lang]
 
 # Keep _lang_code in session_state so t() helper always knows the current language
 st.session_state["_lang_code"] = lang["code"]
-
-# ── One-time warning if Sarvam API is unavailable ──────────────────────────
-if st.session_state.get("_sarvam_disabled"):
-    st.sidebar.warning(st.session_state.get(
-        "_sarvam_error_msg",
-        "⚠️ Translation unavailable. Showing content in English."
-    ))
 
 st.sidebar.markdown("---")
 st.sidebar.subheader(t("🌱 Farm Details"))

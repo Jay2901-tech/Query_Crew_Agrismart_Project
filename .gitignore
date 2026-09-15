@@ -1,4 +1,4 @@
-﻿# Python
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -9,8 +9,9 @@ venv/
 env/
 .venv/
 
-# YOLO model — too large for GitHub (114MB)
+# Large files (models, videos) — too large for GitHub (>100MB)
 *.pt
+*.mp4
 
 # Cache & temp
 .cache/
