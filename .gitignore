@@ -35,7 +35,7 @@ data/
 *.tar
 temp_*/
 
-# Weights and Checkpoints (too large for GitHub, use external storage)
+# Weights and Checkpoints (Tracked via Git LFS for production)
 *.pth
 *.pt
 *.onnx
@@ -43,6 +43,7 @@ temp_*/
 *.h5
 *.bin
 *.ckpt
+!model/weights/best_model.pth
 
 # Experiment & Baseline Checkpoint Directories
 models/
