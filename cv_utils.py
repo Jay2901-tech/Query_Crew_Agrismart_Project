@@ -12,13 +12,20 @@ TensorFlow not installed, etc.) it automatically falls back to mock
 data, so the rest of the app/bonus modules keep working during
 development/demos.
 
-New in v2 (YOLO pipeline):
-  - extract_crop_from_label(raw_label) -> canonical crop type string
-  - get_leaf_model()                   -> cached YOLO leaf detector
-  - detect_and_crop(pil_or_path, ...) -> (img, crops, boxes, is_fallback)
+Leaf Detection (v3 — OpenCV, no PyTorch):
+  Instead of a separate YOLO model file, leaf regions are found using
+  classical computer vision:
+    1. Convert to HSV colour space (more robust than RGB for green detection)
+    2. Threshold for green + yellow-green (covers healthy AND diseased leaves)
+    3. Morphological close+open to merge fragments and drop noise
+    4. Find external contours → bounding boxes → crop
+  This removes the PyTorch / Ultralytics dependency entirely.
+  Fallback: if no green region is found, the full image is used (same
+  behaviour as the previous YOLO fallback path).
 """
 
 import os
+import cv2
 import numpy as np
 from PIL import Image
 
@@ -42,14 +49,21 @@ if not USE_REAL_MODEL:
 
 
 # ---------------------------------------------------------------------------
-# YOLO leaf detector config
+# Leaf detection config
 # ---------------------------------------------------------------------------
-LEAF_MODEL_FILE = "yolo11x_leaf.pt"          # must be in same dir as app.py
-CONF_THRESHOLD   = 0.15                       # YOLO detection confidence
-MIN_BOX_AREA_FRAC = 0.02                      # drop boxes < 2 % of image area
-MAX_BOXES        = 15                         # max crops to keep, by confidence
+MIN_BOX_AREA_FRAC = 0.02    # drop boxes < 2 % of image area (same as before)
+MAX_BOXES         = 15       # max crops to return, largest-first (same as before)
 
-_yolo_cache = {}
+# HSV green range — covers healthy green leaves
+_HSV_GREEN_LO = np.array([25,  40,  40])
+_HSV_GREEN_HI = np.array([95, 255, 255])
+
+# HSV yellow-green range — covers chlorotic / early-disease leaves
+_HSV_YELLOW_LO = np.array([15, 40,  40])
+_HSV_YELLOW_HI = np.array([30, 255, 255])
+
+# Morphology kernel for closing small gaps and opening noise
+_MORPH_KERNEL = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20, 20))
 
 
 # ---------------------------------------------------------------------------
@@ -57,7 +71,6 @@ _yolo_cache = {}
 # Covers all 24 TARGET_CLASSES the classifier can predict.
 # Used by app.py to auto-update the sidebar "Crop" selector.
 # ---------------------------------------------------------------------------
-# Mapping: prefix of raw class label → sidebar crop key
 _LABEL_PREFIX_TO_CROP = {
     "Apple":       "apple",
     "Blueberry":   "blueberry",
@@ -95,138 +108,127 @@ def extract_crop_from_label(raw_label: str) -> str:
     """
     if not raw_label:
         return "other"
-    # The prefix is everything before the first '___', '(', or ','
-    prefix = raw_label.split("___")[0]   # e.g. 'Tomato' or 'Corn_(maize)'
-    prefix = prefix.split("(")[0]        # strip parenthetical
-    prefix = prefix.split(",")[0]        # strip comma (Pepper,_bell)
-    prefix = prefix.strip().rstrip("_")  # tidy up
+    prefix = raw_label.split("___")[0]
+    prefix = prefix.split("(")[0]
+    prefix = prefix.split(",")[0]
+    prefix = prefix.strip().rstrip("_")
     return _LABEL_PREFIX_TO_CROP.get(prefix, "other")
 
 
 # ---------------------------------------------------------------------------
-# YOLO leaf detector — loaded once and cached
+# OpenCV-based leaf detector
 # ---------------------------------------------------------------------------
 
-def get_leaf_model():
+def _build_leaf_mask(img_rgb: np.ndarray) -> np.ndarray:
     """
-    Loads yolo11x_leaf.pt using Ultralytics YOLO and caches it in-process.
-    Requires the model file to exist locally (run download_models.py first).
+    Build a binary mask that covers leaf-coloured pixels (green + yellow-green).
 
-    Returns the YOLO model object, or None if the file is missing or
-    Ultralytics is not installed (allows the rest of the app to keep working).
+    Steps:
+      1. Convert RGB → BGR → HSV  (HSV separates hue from brightness so
+         shadows and highlights don't break the colour threshold)
+      2. Threshold for green range AND yellow-green range separately
+      3. Combine with bitwise OR
+      4. Morphological CLOSE to fill small holes within a leaf region
+      5. Morphological OPEN  to remove small isolated noise blobs
+
+    Returns a uint8 mask (255 = leaf pixel, 0 = background).
     """
-    if "leaf" in _yolo_cache:
-        return _yolo_cache["leaf"]
+    bgr  = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
+    hsv  = cv2.cvtColor(bgr,     cv2.COLOR_BGR2HSV)
 
-    if not os.path.exists(LEAF_MODEL_FILE):
-        print(
-            f"[cv_utils] YOLO model not found at '{LEAF_MODEL_FILE}'. "
-            "Run 'python download_models.py' first. "
-            "Falling back to full-image prediction."
-        )
-        _yolo_cache["leaf"] = None
-        return None
+    mask_green  = cv2.inRange(hsv, _HSV_GREEN_LO,  _HSV_GREEN_HI)
+    mask_yellow = cv2.inRange(hsv, _HSV_YELLOW_LO, _HSV_YELLOW_HI)
+    mask = cv2.bitwise_or(mask_green, mask_yellow)
 
-    try:
-        from ultralytics import YOLO
-        model = YOLO(LEAF_MODEL_FILE)
-        _yolo_cache["leaf"] = model
-        print(f"[cv_utils] Leaf detection model loaded from '{LEAF_MODEL_FILE}'.")
-        return model
-    except Exception as e:
-        print(f"[cv_utils] Could not load YOLO model ({e}). Falling back to full-image.")
-        _yolo_cache["leaf"] = None
-        return None
+    # Close: bridge small gaps inside a leaf (e.g. veins, spots)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, _MORPH_KERNEL)
+    # Open:  remove tiny specks that aren't real leaf regions
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN,  _MORPH_KERNEL)
+
+    return mask
 
 
 def detect_and_crop(
     image_input,
-    conf: float = CONF_THRESHOLD,
+    conf: float = None,              # kept for API compatibility — unused by OpenCV
     min_area_frac: float = MIN_BOX_AREA_FRAC,
     max_boxes: int = MAX_BOXES,
 ):
     """
-    Step 1 / 4 / 7 of the YOLO leaf-detection pipeline.
+    Detect leaf regions in an image using OpenCV colour segmentation
+    and return individual crops for the classifier.
 
     Args:
         image_input: PIL Image object OR a file path string.
-        conf:          YOLO detection confidence threshold.
-        min_area_frac: Drop boxes smaller than this fraction of total image area.
-                       Filters false-positive specks (< 2 % is a safe default).
-        max_boxes:     Cap on returned crops; highest-confidence first.
+        conf:          Ignored (was the YOLO confidence threshold).
+                       Kept so call sites in app.py don't need changes.
+        min_area_frac: Drop bounding boxes smaller than this fraction of
+                       total image area. Filters background noise.
+        max_boxes:     Cap on returned crops; largest-area first.
 
     Returns:
         (original_img, crops, boxes, is_fallback)
-        - original_img  : PIL Image of the full input
-        - crops         : list of PIL Images (individual leaf crops)
-        - boxes         : np.ndarray of shape (N, 4) in xyxy format
-        - is_fallback   : True if no valid leaf survived filtering → crops == [original_img]
-
-    Pipeline steps implemented here:
-        Step 1  — run YOLO leaf detector
-        Step 4  — drop tiny boxes (area < min_area_frac of image)
-        (cap)   — keep at most max_boxes, highest confidence first
-        Step 7  — if nothing survived, return full image as single crop
-
-    Sources for thresholds:
-        CONF_THRESHOLD=0.15   : permissive; allows the later area filter to cull
-                                junk detections rather than missing real leaves.
-        MIN_BOX_AREA_FRAC=0.02: a box covering < 2% of the frame is almost
-                                always a false positive or background artifact.
-        MAX_BOXES=15          : balances UX (gallery size) with runtime cost.
+        - original_img : PIL Image of the full input
+        - crops        : list of PIL Images (individual leaf crops)
+        - boxes        : np.ndarray of shape (N, 4) in xyxy format
+        - is_fallback  : True when no valid leaf region was found →
+                         crops == [original_img] (full image used)
     """
-    # Accept both PIL Image and file path
-    if isinstance(image_input, str):
-        img = Image.open(image_input).convert("RGB")
-        predict_input = image_input   # YOLO can accept file paths directly
-    else:
-        img = image_input.convert("RGB")
-        predict_input = img           # YOLO accepts PIL images too
+    # ── Load image ──────────────────────────────────────────────────────────
+    try:
+        if isinstance(image_input, str):
+            img = Image.open(image_input).convert("RGB")
+        else:
+            img = image_input.convert("RGB")
+    except Exception as e:
+        print(f"[cv_utils] Could not open image ({e}) — using blank fallback.")
+        img = Image.new("RGB", (224, 224), (200, 200, 200))
 
-    img_area = img.size[0] * img.size[1]
+    img_w, img_h = img.size
+    img_area = img_w * img_h
+    img_np   = np.array(img)
 
-    leaf_model = get_leaf_model()
-
-    # If model unavailable, fall back immediately to full image
-    if leaf_model is None:
-        full_box = np.array([[0, 0, img.size[0], img.size[1]]])
+    # ── Build colour mask & find contours ───────────────────────────────────
+    try:
+        mask     = _build_leaf_mask(img_np)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    except Exception as e:
+        print(f"[cv_utils] OpenCV segmentation failed ({e}) — using full image.")
+        full_box = np.array([[0, 0, img_w, img_h]])
         return img, [img], full_box, True
 
-    results = leaf_model.predict(predict_input, conf=conf, verbose=False)
+    # ── Filter by minimum area ───────────────────────────────────────────────
+    valid = []
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        box_area = w * h
+        if box_area / img_area >= min_area_frac:
+            valid.append((x, y, x + w, y + h, box_area))
 
-    # Step 7: nothing detected at all
-    if len(results[0].boxes) == 0:
-        full_box = np.array([[0, 0, img.size[0], img.size[1]]])
+    # ── Fallback: no leaf region found → use full image ──────────────────────
+    if not valid:
+        print("[cv_utils] No leaf region detected by colour segmentation — using full image.")
+        full_box = np.array([[0, 0, img_w, img_h]])
         return img, [img], full_box, True
 
-    boxes_raw = results[0].boxes.xyxy.cpu().numpy()
-    confs_raw = results[0].boxes.conf.cpu().numpy()
+    # ── Sort largest-first, cap at max_boxes ────────────────────────────────
+    valid.sort(key=lambda b: b[4], reverse=True)
+    valid = valid[:max_boxes]
 
-    # Step 4: drop tiny boxes
-    kept = []
-    for box, c in zip(boxes_raw, confs_raw):
-        x1, y1, x2, y2 = box
-        area = (x2 - x1) * (y2 - y1)
-        if area / img_area >= min_area_frac:
-            kept.append((box, float(c)))
+    boxes  = np.array([[b[0], b[1], b[2], b[3]] for b in valid])
+    crops  = [img.crop((b[0], b[1], b[2], b[3])) for b in valid]
 
-    if not kept:
-        # Every box was too tiny → fall back to full image (Step 7)
-        full_box = np.array([[0, 0, img.size[0], img.size[1]]])
-        return img, [img], full_box, True
-
-    # Cap to max_boxes, keeping the highest-confidence ones first
-    kept.sort(key=lambda bc: bc[1], reverse=True)
-    kept = kept[:max_boxes]
-
-    boxes_final = np.array([b for b, c in kept])
-    crops = [img.crop(tuple(map(int, b))) for b, c in kept]
-    return img, crops, boxes_final, False
+    return img, crops, boxes, False
 
 
 # ---------------------------------------------------------------------------
 # Existing helpers — unchanged, keep for backward compatibility
 # ---------------------------------------------------------------------------
+
+def predict_mock(image_path=None):
+    """Mock prediction — used by agent.py when no real image is supplied."""
+    return {"class": "Tomato Early blight", "confidence": 0.91}
+
 
 def predict(pil_image):
     """
@@ -259,7 +261,7 @@ def map_prediction_to_severity(disease_class, confidence):
     if "healthy" in disease_class.strip().lower():
         return "none"
     if confidence < 0.60:
-        return "mild"       # low-confidence positive — treat cautiously
+        return "mild"
     elif confidence < 0.85:
         return "moderate"
     else:
@@ -268,10 +270,11 @@ def map_prediction_to_severity(disease_class, confidence):
 
 if __name__ == "__main__":
     # Quick manual test — replace with a real image path when testing locally
-    img = Image.open("sample_leaf.jpg")
-    pred = predict(img)
-    sev = map_prediction_to_severity(pred["class"], pred["confidence"])
-    print(pred, "->", sev)
+    img = Image.open("test_leaf.jpg")
+    original, crops, boxes, is_fallback = detect_and_crop(img)
+    print(f"is_fallback={is_fallback}, crops found={len(crops)}")
+    for i, crop in enumerate(crops):
+        print(f"  Crop {i+1}: {crop.size}")
 
     # Test label mapping
     test_labels = [
