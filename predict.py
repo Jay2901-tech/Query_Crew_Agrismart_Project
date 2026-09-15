@@ -1,9 +1,18 @@
+"""
+predict.py — Keras model loader + inference helpers
+
+The model is loaded LAZILY (on first predict call), not at import time.
+This prevents a blank crash page in Streamlit if the .keras file is
+missing or TensorFlow fails to initialise — the app still starts and
+shows a clear error only when the user actually tries to run detection.
+"""
+
 import streamlit as st
 import tensorflow as tf
 import numpy as np
 
 # EDIT THIS if your model file lives elsewhere relative to the app.
-# Keep it relative (not C:\Users\...) so it works on any machine/judge's laptop.
+# Keep it relative (not C:\\Users\\...) so it works on any machine/judge's laptop.
 MODEL_PATH = "phase2_best_model.keras"
 
 TARGET_CLASSES = [
@@ -37,15 +46,32 @@ TARGET_CLASSES = [
 @st.cache_resource
 def get_model():
     """
-    st.cache_resource makes Streamlit load the model file ONCE per session
-    and reuse it across reruns/button clicks, instead of reloading from disk
-    every time (which is what the previous register_keras_serializable
-    decorator was accidentally NOT preventing).
+    Load the Keras model once per Streamlit session and cache it.
+    Returns the model on success, or None if the file is missing /
+    TensorFlow fails — callers must check for None before using.
     """
-    return tf.keras.models.load_model(MODEL_PATH)
+    import os
+    if not os.path.exists(MODEL_PATH):
+        return None, (
+            f"Model file '{MODEL_PATH}' not found. "
+            "Make sure the .keras file is in the same folder as app.py."
+        )
+    try:
+        model = tf.keras.models.load_model(MODEL_PATH)
+        return model, None          # (model, error_message)
+    except Exception as e:
+        return None, f"Failed to load model: {e}"
 
 
-model = get_model()
+def _require_model():
+    """
+    Returns the loaded model, or raises a clear RuntimeError so the
+    Streamlit UI can show a user-friendly message instead of a traceback.
+    """
+    model, err = get_model()
+    if model is None:
+        raise RuntimeError(err)
+    return model
 
 
 def clean_label(raw_label):
@@ -66,7 +92,10 @@ def predict_image(pil_image):
     """
     Accepts a PIL Image, pre-processes it, and returns prediction details.
     Returns: (predicted_index: int, predicted_class_raw: str, confidence: float)
+    Raises RuntimeError with a human-readable message if the model is unavailable.
     """
+    model = _require_model()
+
     img = pil_image.convert("RGB").resize((224, 224))
     img_array = np.array(img, dtype=np.float32)
     img_array = np.expand_dims(img_array, axis=0)
@@ -92,7 +121,10 @@ def predict_image_full(pil_image):
          predicted_class_raw: str,
          confidence: float,
          softmax_vector: np.ndarray of shape (num_classes,))
+    Raises RuntimeError with a human-readable message if the model is unavailable.
     """
+    model = _require_model()
+
     img = pil_image.convert("RGB").resize((224, 224))
     img_array = np.array(img, dtype=np.float32)
     img_array = np.expand_dims(img_array, axis=0)

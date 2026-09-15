@@ -31,6 +31,12 @@ SARVAM_LANG_MAP = {
     "en": None,       # no translation needed
     "hi": "hi-IN",
     "gu": "gu-IN",
+    "ta": "ta-IN",
+    "te": "te-IN",
+    "mr": "mr-IN",
+    "bn": "bn-IN",
+    "kn": "kn-IN",
+    "pa": "pa-IN",
 }
 
 
@@ -177,9 +183,15 @@ st.set_page_config(
 
 # Language Localization Mapping (static UI strings — already localised)
 LANGUAGES = {
-    "English":             {"code": "en", "title": "🌾 AgriSmart Disease Detector",         "take_pic": "Take a photo of the plant leaf",  "upload_pic": "Or upload an image file",       "pred_btn": "🔍 Detect & Classify Leaves", "speak_btn": "🔊 Hear Diagnosis"},
-    "Hindi (हिंदी)":      {"code": "hi", "title": "🌾 एग्रीस्मार्ट पौधा रोग पहचान",      "take_pic": "पत्ते की तस्वीर लें",             "upload_pic": "या फोटो अपलोड करें",            "pred_btn": "🔍 रोग पहचानें",              "speak_btn": "🔊 आवाज सुनें"},
-    "Gujarati (ગુજરાતી)": {"code": "gu", "title": "🌾 એગ્રીસ્માર્ટ પાક રોગ ડિટેક્ટર",   "take_pic": "છોડના પાંદડાનો ફોટો લો",         "upload_pic": "અથવા ઈમેજ અપલોડ કરો",          "pred_btn": "🔍 રોગ ઓળખો",                "speak_btn": "🔊 અવાજ સાંભળો"},
+    "English":                {"code": "en", "title": "🌾 AgriSmart Disease Detector",              "take_pic": "Take a photo of the plant leaf",    "upload_pic": "Or upload an image file",          "pred_btn": "🔍 Detect & Classify Leaves",   "speak_btn": "🔊 Hear Diagnosis"},
+    "Hindi (हिंदी)":         {"code": "hi", "title": "🌾 एग्रीस्मार्ट पौधा रोग पहचान",         "take_pic": "पत्ते की तस्वीर लें",               "upload_pic": "या फोटो अपलोड करें",              "pred_btn": "🔍 रोग पहचानें",               "speak_btn": "🔊 आवाज सुनें"},
+    "Gujarati (ગુજરાતી)":    {"code": "gu", "title": "🌾 એગ્રીસ્માર્ટ પાક રોગ ડિટેક્ટર",      "take_pic": "છોડના પાંદડાનો ફોટો લો",           "upload_pic": "અથવા ઈમેજ અપલોડ કરો",            "pred_btn": "🔍 રોગ ઓળખો",                 "speak_btn": "🔊 અવાજ સાંભળો"},
+    "Tamil (தமிழ்)":         {"code": "ta", "title": "🌾 அக்ரிஸ்மார்ட் பயிர் நோய் கண்டறிதல்", "take_pic": "இலையின் புகைப்படம் எடுக்கவும்",   "upload_pic": "அல்லது படத்தை பதிவேற்றவும்",    "pred_btn": "🔍 நோயை கண்டறியவும்",          "speak_btn": "🔊 கண்டறிதலை கேளுங்கள்"},
+    "Telugu (తెలుగు)":       {"code": "te", "title": "🌾 అగ్రిస్మార్ట్ పంట వ్యాధి గుర్తింపు",  "take_pic": "ఆకు ఫోటో తీయండి",               "upload_pic": "లేదా చిత్రాన్ని అప్‌లోడ్ చేయండి", "pred_btn": "🔍 వ్యాధిని గుర్తించండి",       "speak_btn": "🔊 నిర్ణయాన్ని వినండి"},
+    "Marathi (मराठी)":       {"code": "mr", "title": "🌾 अॅग्रीस्मार्ट पीक रोग ओळखणे",         "take_pic": "पानाचा फोटो घ्या",                "upload_pic": "किंवा प्रतिमा अपलोड करा",        "pred_btn": "🔍 रोग ओळखा",                  "speak_btn": "🔊 निदान ऐका"},
+    "Bengali (বাংলা)":       {"code": "bn", "title": "🌾 অ্যাগ্রিস্মার্ট ফসল রোগ শনাক্তকরণ",  "take_pic": "পাতার ছবি তুলুন",               "upload_pic": "অথবা ছবি আপলোড করুন",           "pred_btn": "🔍 রোগ শনাক্ত করুন",           "speak_btn": "🔊 রোগ নির্ণয় শুনুন"},
+    "Kannada (ಕನ್ನಡ)":      {"code": "kn", "title": "🌾 ಅಗ್ರಿಸ್ಮಾರ್ಟ್ ಬೆಳೆ ರೋಗ ಪತ್ತೆ",       "take_pic": "ಎಲೆಯ ಫೋಟೋ ತೆಗೆಯಿರಿ",            "upload_pic": "ಅಥವಾ ಚಿತ್ರ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",       "pred_btn": "🔍 ರೋಗ ಪತ್ತೆ ಮಾಡಿ",            "speak_btn": "🔊 ರೋಗ ನಿರ್ಣಯ ಕೇಳಿ"},
+    "Punjabi (ਪੰਜਾਬੀ)":     {"code": "pa", "title": "🌾 ਐਗਰੀਸਮਾਰਟ ਫ਼ਸਲ ਰੋਗ ਖੋਜ",            "take_pic": "ਪੱਤੇ ਦੀ ਫ਼ੋਟੋ ਲਓ",              "upload_pic": "ਜਾਂ ਤਸਵੀਰ ਅਪਲੋਡ ਕਰੋ",          "pred_btn": "🔍 ਰੋਗ ਲੱਭੋ",                  "speak_btn": "🔊 ਨਿਦਾਨ ਸੁਣੋ"},
 }
 
 # All crop types across 24 model classes (sidebar + threshold dicts)
@@ -543,11 +555,18 @@ if image_data is not None:
         # ---- Reset button ----
         st.markdown("---")
         if st.button(t("🔄 Analyse Another Image")):
-            st.session_state.leaf_crops         = None
-            st.session_state.leaf_boxes         = None
-            st.session_state.is_fallback        = False
-            st.session_state.detection_done     = False
-            st.session_state.selected_crop_idx  = 0
-            st.session_state.final_result       = None
-            st.session_state["_last_img_id"]    = None
+            # Clear image/detection pipeline state
+            st.session_state.leaf_crops          = None
+            st.session_state.leaf_boxes          = None
+            st.session_state.is_fallback         = False
+            st.session_state.detection_done      = False
+            st.session_state.selected_crop_idx   = 0
+            st.session_state.final_result        = None
+            st.session_state["_last_img_id"]     = None
+            # Also clear downstream module state so the next image
+            # starts fresh (otherwise irrigation_log accumulates, sensors
+            # keep stale crop, and sustainability scores are wrong)
+            st.session_state.irrigation_log      = []
+            st.session_state.sensors             = None
+            st.session_state.detected_crop_type  = None
             st.rerun()
