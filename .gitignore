@@ -1,0 +1,25 @@
+﻿# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment — MOST IMPORTANT, this is why you see the warning
+myenv/
+venv/
+env/
+.venv/
+
+# YOLO model — too large for GitHub (114MB)
+*.pt
+
+# Cache & temp
+.cache/
+.dist/
+
+# Secrets
+.env
+*.env
+
+# OS
+Thumbs.db
+.DS_Store
