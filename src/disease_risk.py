@@ -278,22 +278,17 @@ def disease_risk_assessment(humidity_pct, temperature_c, leaf_wetness_hours,
 
     if humidity_pct >= t["humidity_pct"] and t["temp_min"] <= temperature_c <= t["temp_max"]:
         risk_factors.append(
-            f"[{crop_type}] Humidity {humidity_pct}% (>={t['humidity_pct']}% threshold) + "
-            f"temperature {temperature_c}°C (within {t['temp_min']}-{t['temp_max']}°C "
-            f"fungal-favorable range for this crop) — conditions favor fungal disease"
+            f"High air humidity ({humidity_pct}%) and warm temperature ({temperature_c}°C) favor fungal growth."
         )
 
     if leaf_wetness_hours >= t["leaf_wetness_hours"]:
         risk_factors.append(
-            f"[{crop_type}] Leaf wetness {leaf_wetness_hours}h "
-            f"(>={t['leaf_wetness_hours']}h threshold for this crop) raises bacterial/fungal risk"
+            f"Sustained leaf wetness for {leaf_wetness_hours} hours elevates risk of fungal or bacterial infection."
         )
 
     if recent_rain_mm >= t["rain_mm"] and temperature_c >= t["rain_temp_min"]:
         risk_factors.append(
-            f"[{crop_type}] Recent rainfall {recent_rain_mm}mm (>={t['rain_mm']}mm threshold) + "
-            f"temperature {temperature_c}°C (>={t['rain_temp_min']}°C threshold) — "
-            f"blight-favorable conditions for this crop"
+            f"Recent rainfall ({recent_rain_mm}mm) at {temperature_c}°C creates blight-favorable conditions for {crop_type.capitalize()}."
         )
 
     weather_risk = len(risk_factors) > 0

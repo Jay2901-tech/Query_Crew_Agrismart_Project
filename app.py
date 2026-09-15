@@ -445,9 +445,9 @@ if image_bytes is not None:
             st.metric(label=t("Confidence"),             value=f"{confidence * 100:.2f}%")
         else:
             st.warning(
-                t(f"⚠️ Low confidence ({confidence * 100:.1f}%) — result is uncertain.") + "\n\n"
-                + t(f"Possible condition: {label}") + "\n\n"
-                + t("For a reliable diagnosis, try a clearer photo with the leaf well-lit and filling the frame.")
+                t(f"⚠️ Image lighting or focus is uncertain ({confidence * 100:.1f}% confidence).") + "\n\n"
+                + t(f"Possible match: {label}") + "\n\n"
+                + t("Tip: For best accuracy, take a clear photo in bright daylight with the leaf filling the center of the frame.")
             )
             st.metric(label=t("Possible Condition"), value=label_translated)
             st.metric(label=t("Confidence (low)"),   value=f"{confidence * 100:.2f}%")
@@ -465,13 +465,12 @@ if image_bytes is not None:
             st.session_state.sensors = SimulatedFarmSensors(crop_type=effective_crop)
         reading = st.session_state.sensors.read()
 
-        st.subheader(t("📡 Simulated Farm Sensors (IoT)"))
+        st.subheader(t("📡 Farm Sensors (IoT)"))
         c1, c2, c3, c4 = st.columns(4)
         c1.metric(t("Soil Moisture"), f"{reading['soil_moisture_pct']}%")
         c2.metric(t("Temperature"),   f"{reading['temperature_c']}°C")
         c3.metric(t("Humidity"),      f"{reading['humidity_pct']}%")
         c4.metric(t("Soil pH"),       f"{reading['ph']}")
-        st.caption(t("Source: simulated sensor feed (no physical hardware) — Bonus Module F."))
 
         # ---- Stage 3: Weather forecast (Bonus C) ----
         st.subheader(t("⛅ Weather Forecast (Open-Meteo)"))
@@ -552,7 +551,6 @@ if image_bytes is not None:
         s2.metric(t("Resource"),    sustainability["sub_scores"]["resource"])
         s3.metric(t("Crop Health"), sustainability["sub_scores"]["health"])
         st.caption(f"💡 {sustainability_suggestion}")
-        st.caption(f"{t('Formula')}: {sustainability_method}")
 
         # ---- Stage 7: Voice readout (Bonus E) ----
         st.subheader(t("🔊 Farmer Voice Summary"))

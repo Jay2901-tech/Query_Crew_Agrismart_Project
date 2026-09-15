@@ -4,11 +4,36 @@ An AI-powered smart agriculture advisor dashboard built for smallholder farmers.
 
 ---
 
+## 🌟 Key Highlights & Advantages
+
+1. **Multilingual Regional Voice Assistant (Sarvam AI + gTTS)**:
+   - Provides complete text and voice audio support in **9 Indian regional languages**: *English, Hindi (हिंदी), Gujarati (ગુજરાતી), Tamil (தமிழ்), Telugu (తెలుగు), Marathi (मराठी), Bengali (বাংলা), Kannada (ಕನ್ನಡ), Punjabi (ਪੰਜਾਬੀ)*.
+   - Farmers can listen to their disease diagnosis and irrigation advice in their native language directly on their phone or computer.
+
+2. **Developer Note on API Keys**:
+   > **Note for Evaluators**: To ensure zero setup friction for judges, the Sarvam AI translation API key is temporarily hardcoded in `app.py` for evaluation convenience. After the evaluation period is complete, the API key will be rotated and invalidated.
+
+3. **Deep Learning Disease Classification (PlantVillage Dataset)**:
+   - Built on a **MobileNetV2** deep learning architecture trained on the benchmark **PlantVillage dataset**.
+   - Classifies **24 distinct plant health conditions** across major crops (*Apple, Corn, Grape, Potato, Tomato, Pepper, Strawberry, Soybean, Squash, etc.*).
+
+4. **Resilient "Crop-Then-Classify" Vision Pipeline**:
+   - Uses HSV green-channel color space segmentation (with optional YOLO support) to isolate the leaf region and crop out background noise (soil, hands, tools) before passing it to MobileNetV2.
+
+5. **Integrated Agronomic Decision Engines (Bonus Modules B – G)**:
+   - **Smart Irrigation (Module B)**: Evaluates IoT soil moisture against 48-hour rain forecasts to prevent overwatering.
+   - **Weather Intelligence (Module C)**: Fetches live weather from the free **Open-Meteo REST API**.
+   - **Sustainability Score (Module D)**: Dynamic 0–100 rating combining water saving, nutrient balance, and crop health.
+   - **IoT Sensor Feed (Module F)**: Streams live simulated sensor readings (Moisture, Temp, Humidity, pH).
+   - **Agentic Advisor (Module G)**: Autonomous decision loop (`agent.py`) for continuous monitoring.
+
+---
+
 ## 📁 Repository Structure
 
 ```text
 Query_Crew/
-├── README.md               # Project overview, rubric mapping, and execution instructions
+├── README.md               # Project documentation, highlights, and run instructions
 ├── requirements.txt        # Python package dependencies (uv and pip supported)
 ├── app.py                  # Main Streamlit dashboard UI entry point
 ├── download_models.py      # Weights downloader script (auto-detects uv or pip)
@@ -33,13 +58,13 @@ Query_Crew/
 
 ## 🎯 Evaluation Criteria Implementation Matrix (Points B – G)
 
-| Rubric Point | Module & File | Logic / Data Source / Formula | Status |
+| Rubric Point | Module & File | Logic / Data Source / Approach | Status |
 | :--- | :--- | :--- | :---: |
-| **B. Smart Irrigation** | [`src/irrigation.py`](file:///d:/Query_Crew%20-%20Copy/src/irrigation.py) | **Logic**: Compares IoT soil moisture against crop-specific thresholds (e.g. Tomato target 60-80%) and 48h rain forecast. **Validation**: Prevents overwatering if rain probability $\ge 60\%$ or rain $\ge 5\text{ mm}$, issuing precise gallon/liter volume recommendations. | ✅ Complete |
-| **C. Weather Intelligence** | [`src/weather.py`](file:///d:/Query_Crew%20-%20Copy/src/weather.py)<br>[`src/disease_risk.py`](file:///d:/Query_Crew%20-%20Copy/src/disease_risk.py) | **Source**: Live 7-day forecast from **Open-Meteo REST API** (lat/lon grounded). **Actions**: Produces alerts like *"Delay irrigation - 80% rain likely"* or *"Raised disease risk - leaf wetness 6h elevated"*. | ✅ Complete |
-| **D. Sustainability Score** | [`src/sustainability.py`](file:///d:/Query_Crew%20-%20Copy/src/sustainability.py) | **Formula**: Score $= 0.40 \cdot \text{WaterEfficiency} + 0.30 \cdot \text{ResourceBalance} + 0.30 \cdot \text{CropHealthScore}$ (Scale 0-100). Generates actionable eco-improvement suggestions. | ✅ Complete |
-| **E. Farmer Assistant & Voice** | [`app.py`](file:///d:/Query_Crew%20-%20Copy/app.py) | **Localization**: Grounded AI diagnosis and advisory translated into **9 regional Indian languages** (*Hindi, Gujarati, Tamil, Telugu, Marathi, Bengali, Kannada, Punjabi, English*) via Sarvam AI API. **Voice**: Text-to-speech synthesis via `gTTS`. | ✅ Complete |
-| **F. IoT Integration** | [`src/sensors.py`](file:///d:/Query_Crew%20-%20Copy/src/sensors.py) | **Feed**: `SimulatedFarmSensors` class streaming continuous live readings for Soil Moisture (%), Temperature (°C), Humidity (%), and Soil pH per crop type. | ✅ Complete |
+| **B. Smart Irrigation** | [`src/irrigation.py`](file:///d:/Query_Crew%20-%20Copy/src/irrigation.py) | **Logic**: Compares IoT soil moisture against crop-specific targets (e.g. Tomato 60–80%) and 48h rain forecast. Prevents overwatering if rain chance $\ge 60\%$ or rain $\ge 5\text{ mm}$. | ✅ Complete |
+| **C. Weather Intelligence** | [`src/weather.py`](file:///d:/Query_Crew%20-%20Copy/src/weather.py)<br>[`src/disease_risk.py`](file:///d:/Query_Crew%20-%20Copy/src/disease_risk.py) | **Source**: Live forecast from **Open-Meteo REST API** (lat/lon grounded). Produces humanized warnings for elevated disease risks and rain delays. | ✅ Complete |
+| **D. Sustainability Score** | [`src/sustainability.py`](file:///d:/Query_Crew%20-%20Copy/src/sustainability.py) | **Formula**: Score $= 0.40 \cdot \text{WaterEfficiency} + 0.30 \cdot \text{ResourceBalance} + 0.30 \cdot \text{CropHealthScore}$ (Scale 0–100). | ✅ Complete |
+| **E. Farmer Assistant & Voice** | [`app.py`](file:///d:/Query_Crew%20-%20Copy/app.py) | **Localization**: Grounded AI diagnosis translated into **9 regional Indian languages** via Sarvam AI API. Audio voice readout via `gTTS`. | ✅ Complete |
+| **F. IoT Integration** | [`src/sensors.py`](file:///d:/Query_Crew%20-%20Copy/src/sensors.py) | **Feed**: `SimulatedFarmSensors` class streaming continuous live readings for Soil Moisture (%), Temp (°C), Humidity (%), and pH. | ✅ Complete |
 | **G. Agentic Advisor** | [`agent.py`](file:///d:/Query_Crew%20-%20Copy/agent.py) | **Decision Loop**: Autonomous cycle (`read` $\rightarrow$ `reason` $\rightarrow$ `decide` $\rightarrow$ `notify`). Tracks notification history to prevent duplicate alert spam. | ✅ Complete |
 
 ---
@@ -48,75 +73,43 @@ Query_Crew/
 
 ### Option 1: Fast Setup using `uv` (Recommended)
 
-`uv` is an extremely fast Python package installer and virtual environment manager written in Rust.
+```bash
+# 1. Install uv (if not already installed)
+pip install uv
 
-1. **Install `uv` (if not already installed)**:
-   ```bash
-   # Via pip (cross-platform):
-   pip install uv
+# 2. Navigate to project folder
+cd Query_Crew
 
-   # OR via Standalone Installer:
-   # On Windows (PowerShell):
-   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-   # On Linux/macOS:
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
+# 3. Create & activate virtual environment
+uv venv
+.venv\Scripts\activate      # On Windows
+source .venv/bin/activate   # On Linux/macOS
 
-2. **Navigate to project folder**:
-   ```bash
-   cd Query_Crew
-   ```
+# 4. Install dependencies
+uv pip install -r requirements.txt
 
-3. **Create and activate virtual environment using `uv`**:
-   ```bash
-   uv venv
-   # On Windows (PowerShell):
-   .venv\Scripts\activate
-   # On Linux/macOS:
-   source .venv/bin/activate
-   ```
-
-4. **Install dependencies using `uv`**:
-   ```bash
-   uv pip install -r requirements.txt
-   ```
-
-4. **Launch the Streamlit app**:
-   ```bash
-   streamlit run app.py
-   ```
-   *(Or run directly via uv: `uv run streamlit run app.py`)*
+# 5. Run application
+streamlit run app.py
+```
 
 ---
 
 ### Option 2: Standard Setup using `pip`
 
-1. **Create virtual environment**:
-   ```bash
-   python -m venv myenv
-   # On Windows (PowerShell):
-   myenv\Scripts\activate
-   # On Linux/macOS:
-   source myenv/bin/activate
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Run the application**:
-   ```bash
-   streamlit run app.py
-   ```
+```bash
+python -m venv myenv
+myenv\Scripts\activate      # On Windows
+source myenv/bin/activate   # On Linux/macOS
+pip install -r requirements.txt
+streamlit run app.py
+```
 
 ---
 
-## 🤖 Running the Autonomous Agentic Loop (Module G)
+## ⚠️ Known Limitations & Future Enhancements
 
-To demonstrate the autonomous agentic decision loop in headless terminal mode:
+1. **Hardware IoT Integration**:
+   - Currently uses a simulated IoT stream (`SimulatedFarmSensors`) to generate realistic continuous soil moisture, temperature, humidity, and pH readings. Physical hardware integration (e.g. ESP32 / Arduino MQTT bridge) is planned as a future hardware addon.
 
-```bash
-python agent.py
-```
-This runs 7 simulated daily cycles reading IoT sensors, fetching weather forecasts, reasoning over disease risks, and notifying the farmer.
+2. **Network Dependency for Translation**:
+   - Sarvam AI regional translation requires active internet access. If network connections are lost, the application seamlessly falls back to English advisories.
