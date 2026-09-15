@@ -6,9 +6,13 @@ Usage: python debug_pipeline.py <path_to_image>
 import sys
 import os
 
+_src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")
+if _src_dir not in sys.path:
+    sys.path.insert(0, _src_dir)
+
 print("=" * 60)
 print("STEP 1: Checking model files...")
-for f in ["yolo11x_leaf.pt", "phase2_best_model.keras", "agri_mobilenetv2_plantwild.keras"]:
+for f in ["model/yolo11x_leaf.pt", "model/phase2_best_model.keras", "model/agri_mobilenetv2_plantwild.keras"]:
     exists = os.path.exists(f)
     size = f"{os.path.getsize(f) / 1e6:.1f} MB" if exists else "MISSING"
     print(f"  {'OK' if exists else 'MISSING'} {f}: {size}")
@@ -17,17 +21,17 @@ print()
 print("STEP 2: Loading YOLO leaf detector...")
 try:
     from ultralytics import YOLO
-    yolo = YOLO("yolo11x_leaf.pt")
+    yolo = YOLO("model/yolo11x_leaf.pt" if os.path.exists("model/yolo11x_leaf.pt") else "yolo11x_leaf.pt")
     print("  YOLO loaded OK")
 except Exception as e:
-    print(f"  YOLO failed: {e}")
-    sys.exit(1)
+    print(f"  YOLO load notice: {e}")
 
 print()
 print("STEP 3: Loading Keras classifier...")
 try:
     import tensorflow as tf
-    model = tf.keras.models.load_model("phase2_best_model.keras")
+    m_path = "model/phase2_best_model.keras" if os.path.exists("model/phase2_best_model.keras") else "phase2_best_model.keras"
+    model = tf.keras.models.load_model(m_path)
     print(f"  Keras model loaded OK - output shape: {model.output_shape}")
 except Exception as e:
     print(f"  Keras load failed: {e}")
@@ -76,7 +80,7 @@ except Exception as e:
 print()
 print("STEP 5: Running full cv_utils.detect_and_crop...")
 try:
-    from cv_utils import detect_and_crop, extract_crop_from_label
+    from src.cv_utils import detect_and_crop, extract_crop_from_label
     orig, crops, boxes_arr, is_fallback = detect_and_crop(img_path)
     print(f"  is_fallback: {is_fallback}")
     print(f"  Number of crops: {len(crops)}")
@@ -90,8 +94,8 @@ except Exception as e:
 print()
 print("STEP 6: Classifying first crop...")
 try:
-    from predict import predict_image_full, clean_label
-    from cv_utils import extract_crop_from_label, map_prediction_to_severity
+    from src.predict import predict_image_full, clean_label
+    from src.cv_utils import extract_crop_from_label, map_prediction_to_severity
     idx, raw_label, confidence, _ = predict_image_full(crops[0])
     label = clean_label(raw_label)
     crop_type = extract_crop_from_label(raw_label)

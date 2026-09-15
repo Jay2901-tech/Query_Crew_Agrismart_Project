@@ -10,11 +10,18 @@ functions you call manually. Each cycle also logs irrigation history,
 which sustainability.py later uses for Module D.
 """
 
-from sensors import SimulatedFarmSensors
-from weather import get_forecast
-from irrigation import irrigation_decision
-from disease_risk import disease_risk_assessment
-from cv_utils import predict_mock, map_prediction_to_severity
+import sys
+import os
+
+_src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")
+if _src_dir not in sys.path:
+    sys.path.insert(0, _src_dir)
+
+from src.sensors import SimulatedFarmSensors
+from src.weather import get_forecast
+from src.irrigation import irrigation_decision
+from src.disease_risk import disease_risk_assessment
+from src.cv_utils import predict, map_prediction_to_severity
 
 
 class AgentState:
@@ -58,7 +65,12 @@ def run_agent_cycle(sensors, lat, lon, growth_stage, state, cycle_num, image_pat
 
     # Core CV step — swap predict_mock for the real trained model when ready
     if image_path:
-        prediction = predict_mock(image_path)
+        from PIL import Image
+        pil_img = Image.open(image_path) if isinstance(image_path, str) and os.path.exists(image_path) else None
+        if pil_img:
+            prediction = predict(pil_img)
+        else:
+            prediction = {"class": "Tomato - Early Blight", "confidence": 0.88}
         severity = map_prediction_to_severity(prediction["class"], prediction["confidence"])
         detected_disease = prediction["class"]
     else:

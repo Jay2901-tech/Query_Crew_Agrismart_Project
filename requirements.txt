@@ -2,67 +2,21 @@
 # AgriSmart — Query Crew
 # requirements.txt
 #
-# Python 3.12
-#
-# Install with:
-#   pip install -r requirements.txt
-#
-# NOTE: Large model files (.keras, .pt) are NOT pip packages.
-#   - phase2_best_model.keras        — included in repo (~21 MB)
-#   - agri_mobilenetv2_plantwild.keras — included in repo (~21 MB)
-#   - yolo11x_leaf.pt               — download separately (114 MB, too large for GitHub)
-#     Run:  python download_models.py
+# Installation:
+#   Fast (using uv):   uv pip install -r requirements.txt
+#   Standard (pip):   pip install -r requirements.txt
 # ============================================================
 
+# Web Application UI Framework
+streamlit>=1.30.0
 
-# ------------------------------------------------------------------
-# Web App
-# ------------------------------------------------------------------
-streamlit==1.63.0
+# Machine Learning & Computer Vision Inference
+tensorflow>=2.15.0
+keras>=3.0.0
+numpy>=1.24.0
+pillow>=10.0.0
+opencv-python>=4.8.0
 
-
-# ------------------------------------------------------------------
-# Computer Vision & ML — Core Model
-# ------------------------------------------------------------------
-tensorflow==2.21.0
-keras==3.15.1
-numpy==2.5.3
-pillow==12.3.0
-opencv-python==5.0.0.93
-
-
-# ------------------------------------------------------------------
-# YOLO Leaf Detection
-# ------------------------------------------------------------------
-# IMPORTANT: Install with CPU-only torch to avoid pulling the full
-# CUDA build (~2 GB). Use this command instead of plain pip install:
-#
-#   pip install torch==2.14.0+cpu torchvision==0.29.0+cpu \
-#       --extra-index-url https://download.pytorch.org/whl/cpu
-#
-# Then install the rest normally:
-#   pip install -r requirements.txt
-#
-ultralytics==8.4.152          # YOLO model runner (loads yolo11x_leaf.pt)
-torch==2.14.0+cpu             # CPU-only build (~200 MB vs 2 GB+ for CUDA)
-torchvision==0.29.0+cpu       # CPU-only build
-
-# NOTE: yolo11x_leaf.pt (114 MB) must be downloaded separately.
-# The app gracefully falls back to full-image classification if the
-# file is missing — so YOLO is optional for judges short on time.
-
-
-# ------------------------------------------------------------------
-# Translation & Voice (Sarvam + gTTS)
-# ------------------------------------------------------------------
-sarvamai==0.1.33              # Official Sarvam AI SDK (used for translation calls)
-gTTS==2.5.4                   # Google Text-to-Speech for farmer voice summary
-requests==2.34.2              # HTTP client for Sarvam & Open-Meteo API calls
-
-
-# ------------------------------------------------------------------
-# Weather API (Open-Meteo — free, no key needed)
-# ------------------------------------------------------------------
-# requests already listed above
-
-
+# Multilingual Regional Translation & Voice Speech (gTTS)
+gTTS>=2.5.0
+requests>=2.31.0

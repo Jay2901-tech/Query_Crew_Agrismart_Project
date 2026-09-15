@@ -1,24 +1,31 @@
+import sys
+import os
 import streamlit as st
 from PIL import Image
 from gtts import gTTS
 from io import BytesIO
 import tempfile
-import os
 import requests
 import re
+import hashlib
 
-from predict import predict_image, predict_image_full, clean_label
-from cv_utils import (
+# Ensure src directory is in sys.path
+_src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")
+if _src_dir not in sys.path:
+    sys.path.insert(0, _src_dir)
+
+from src.predict import predict_image, predict_image_full, clean_label
+from src.cv_utils import (
     map_prediction_to_severity,
     extract_crop_from_label,
     detect_and_crop,
 )
-from sensors import SimulatedFarmSensors
-from weather import get_forecast, get_past_week_report
-from irrigation import irrigation_decision
-from disease_risk import disease_risk_assessment
-from fertilizer import get_recommended_fertilizer
-from sustainability import sustainability_score
+from src.sensors import SimulatedFarmSensors
+from src.weather import get_forecast, get_past_week_report
+from src.irrigation import irrigation_decision
+from src.disease_risk import disease_risk_assessment
+from src.fertilizer import get_recommended_fertilizer
+from src.sustainability import sustainability_score
 
 # ---------------------------------------------------------------------------
 # Sarvam Translation Layer
@@ -94,19 +101,14 @@ _SARVAM_FATAL_CODES = {
 }
 
 
-def _sarvam_translate_chunk(chunk: str, target_sarvam_code: str) -> str:
+@st.cache_data(ttl=86400, show_spinner=False)
+def _raw_sarvam_translate_call(chunk: str, target_sarvam_code: str) -> str:
     """
-    Translates a SINGLE chunk via Sarvam API.
-    - Results are cached in st.cache_data per (chunk, lang).
-    - On fatal errors (bad key, no credits, rate-limit) sets a session flag
-      so ALL future calls skip the API and return English immediately.
-    - On transient errors (timeout, 5xx) returns English for this chunk only.
+    Cached API call to Sarvam AI.
+    Results are saved in RAM for 24 hours per (chunk, language).
+    Subsequent renders with the same string return instantaneously.
     """
     if not chunk or not chunk.strip():
-        return chunk
-
-    # If a fatal error was already detected this session, skip the API entirely
-    if st.session_state.get("_sarvam_disabled"):
         return chunk
 
     try:
@@ -124,30 +126,53 @@ def _sarvam_translate_chunk(chunk: str, target_sarvam_code: str) -> str:
                 "mode": "formal",
                 "enable_preprocessing": True,   # handles agri/technical terms
             },
-            timeout=10,
+            timeout=5,
         )
 
-        # ── Fatal errors: disable translation for the rest of the session ──
+        # ── Fatal errors: return marker string to trigger session flag ──
         if resp.status_code in _SARVAM_FATAL_CODES:
-            reason = _SARVAM_FATAL_CODES[resp.status_code]
-            st.session_state["_sarvam_disabled"] = True
-            st.session_state["_sarvam_error_msg"] = (
-                f"⚠️ Translation unavailable ({resp.status_code} — {reason}). "
-                f"Showing content in English."
-            )
-            return chunk   # return English, do not raise
+            return f"__FATAL_{resp.status_code}__"
 
-        # ── Transient server errors: fail this chunk only, keep trying next ──
+        # ── Transient server errors: fail this chunk only ──
         if resp.status_code >= 500:
             return chunk
 
         resp.raise_for_status()
         return resp.json().get("translated_text", chunk)
 
-    except requests.exceptions.Timeout:
-        return chunk   # network timeout — return English for this chunk
     except Exception:
-        return chunk   # any other error — safe English fallback
+        return chunk   # safe English fallback on network error/timeout
+
+
+def _sarvam_translate_chunk(chunk: str, target_sarvam_code: str) -> str:
+    """
+    Translates a SINGLE chunk via Sarvam API.
+    - Uses cached _raw_sarvam_translate_call for zero-latency UI reruns.
+    - On fatal errors (bad key, no credits, rate-limit) sets a session flag
+      so ALL future calls skip the API and return English immediately.
+    """
+    if not chunk or not chunk.strip():
+        return chunk
+
+    # If a fatal error was already detected this session, skip the API entirely
+    if st.session_state.get("_sarvam_disabled"):
+        return chunk
+
+    res = _raw_sarvam_translate_call(chunk, target_sarvam_code)
+    if res.startswith("__FATAL_"):
+        try:
+            status_code = int(res.split("_")[2])
+            reason = _SARVAM_FATAL_CODES.get(status_code, "API failure")
+            st.session_state["_sarvam_disabled"] = True
+            st.session_state["_sarvam_error_msg"] = (
+                f"⚠️ Translation unavailable ({status_code} — {reason}). "
+                f"Showing content in English."
+            )
+        except Exception:
+            pass
+        return chunk
+
+    return res
 
 
 def _sarvam_translate(text: str, target_sarvam_code: str) -> str:
@@ -265,22 +290,21 @@ actual_fertilizer_kg = st.sidebar.number_input(
 # ---------------------------------------------------------------------------
 st.title(lang["title"])
 
-input_option = st.radio(t("Choose Input Method:"), (t("Camera"), t("Upload Local File")), horizontal=True)
+uploaded_file = st.file_uploader(
+    lang["upload_pic"],
+    type=["jpg", "jpeg", "png"],
+    key="leaf_image_uploader",
+)
 
-image_data = None
-if input_option == t("Camera"):
-    camera_file = st.camera_input(lang["take_pic"])
-    if camera_file:
-        image_data = camera_file
-else:
-    uploaded_file = st.file_uploader(lang["upload_pic"], type=["jpg", "jpeg", "png"])
-    if uploaded_file:
-        image_data = uploaded_file
+if uploaded_file is not None:
+    st.session_state["active_image_bytes"] = uploaded_file.getvalue()
 
-# Reset pipeline state when a new image is loaded
-if image_data is not None:
-    img = Image.open(image_data)
-    current_img_id = getattr(image_data, "file_id", id(image_data))
+image_bytes = st.session_state.get("active_image_bytes")
+
+# Reset pipeline state ONLY when a genuinely new image is loaded
+if image_bytes is not None:
+    img = Image.open(BytesIO(image_bytes))
+    current_img_id = hashlib.md5(image_bytes).hexdigest()
     if st.session_state.get("_last_img_id") != current_img_id:
         st.session_state["_last_img_id"]    = current_img_id
         st.session_state.leaf_crops         = None
@@ -563,6 +587,7 @@ if image_data is not None:
             st.session_state.selected_crop_idx   = 0
             st.session_state.final_result        = None
             st.session_state["_last_img_id"]     = None
+            st.session_state["active_image_bytes"] = None
             # Also clear downstream module state so the next image
             # starts fresh (otherwise irrigation_log accumulates, sensors
             # keep stale crop, and sustainability scores are wrong)

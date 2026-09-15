@@ -7,13 +7,21 @@ missing or TensorFlow fails to initialise — the app still starts and
 shows a clear error only when the user actually tries to run detection.
 """
 
+import os
 import streamlit as st
 import tensorflow as tf
 import numpy as np
 
-# EDIT THIS if your model file lives elsewhere relative to the app.
-# Keep it relative (not C:\\Users\\...) so it works on any machine/judge's laptop.
-MODEL_PATH = "phase2_best_model.keras"
+# Resolve path to phase2_best_model.keras inside model/ directory
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_POSSIBLE_PATHS = [
+    os.path.join(_BASE_DIR, "model", "phase2_best_model.keras"),
+    os.path.join(_BASE_DIR, "phase2_best_model.keras"),
+    "model/phase2_best_model.keras",
+    "phase2_best_model.keras",
+]
+
+MODEL_PATH = next((p for p in _POSSIBLE_PATHS if os.path.exists(p)), _POSSIBLE_PATHS[0])
 
 TARGET_CLASSES = [
     "Apple___Apple_scab",
@@ -50,11 +58,10 @@ def get_model():
     Returns the model on success, or None if the file is missing /
     TensorFlow fails — callers must check for None before using.
     """
-    import os
     if not os.path.exists(MODEL_PATH):
         return None, (
             f"Model file '{MODEL_PATH}' not found. "
-            "Make sure the .keras file is in the same folder as app.py."
+            "Make sure phase2_best_model.keras is in the model/ directory."
         )
     try:
         model = tf.keras.models.load_model(MODEL_PATH)
