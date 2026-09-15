@@ -32,12 +32,25 @@ opencv-python==5.0.0.93
 
 
 # ------------------------------------------------------------------
-# Leaf Detection — OpenCV colour segmentation (no PyTorch needed)
+# YOLO Leaf Detection
 # ------------------------------------------------------------------
-# Leaf regions are found using HSV green-channel thresholding via
-# OpenCV (already listed above under Computer Vision).
-# No separate model file or download step required.
-# Falls back to full-image classification if no green region found.
+# IMPORTANT: Install with CPU-only torch to avoid pulling the full
+# CUDA build (~2 GB). Use this command instead of plain pip install:
+#
+#   pip install torch==2.14.0+cpu torchvision==0.29.0+cpu \
+#       --extra-index-url https://download.pytorch.org/whl/cpu
+#
+# Then install the rest normally:
+#   pip install -r requirements.txt
+#
+ultralytics==8.4.152          # YOLO model runner (loads yolo11x_leaf.pt)
+torch==2.14.0+cpu             # CPU-only build (~200 MB vs 2 GB+ for CUDA)
+torchvision==0.29.0+cpu       # CPU-only build
+
+# NOTE: yolo11x_leaf.pt (114 MB) must be downloaded separately.
+# The app gracefully falls back to full-image classification if the
+# file is missing — so YOLO is optional for judges short on time.
+
 
 # ------------------------------------------------------------------
 # Translation & Voice (Sarvam + gTTS)
