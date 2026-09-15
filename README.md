@@ -7,7 +7,7 @@ An AI-powered smart agriculture advisor dashboard built for smallholder farmers.
 ## 📹 Video Demonstration & Live Demo
 
 - **Application Live Dashboard**: Deployable on Render / Streamlit Cloud
-- **Video Walkthrough**: 🎬 **[Watch Full Video Walkthrough (Google Drive / YouTube Link)](PASTE_YOUR_VIDEO_URL_HERE)**
+- **Video Walkthrough**: 🎬 **[Watch Full Video Walkthrough (Agrismart_AI.mp4)](Agrismart_AI.mp4)**
 - **Video Highlights**: Showcases HSV image leaf isolation, MobileNetV2 disease diagnosis, Open-Meteo live weather integration, smart irrigation alerts, and multilingual voice audio readout in Hindi & Gujarati.
 
 ---

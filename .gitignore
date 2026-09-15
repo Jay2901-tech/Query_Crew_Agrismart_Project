@@ -9,9 +9,8 @@ venv/
 env/
 .venv/
 
-# Large files (models, videos) — too large for GitHub (>100MB)
+# Large files (models)
 *.pt
-*.mp4
 
 # Cache & temp
 .cache/
