@@ -1,0 +1,10 @@
+{
+    "model_architecture": "tf_efficientnetv2_s",
+    "active_checkpoint": "model/weights/best_model.pth",
+    "checkpoint_size_bytes": 243997469,
+    "metrics": {
+        "PlantVillage_Macro_F1": "99.30%",
+        "PlantDoc_Macro_F1": "70.79%",
+        "Overall_Macro_F1": "97.71%"
+    }
+}

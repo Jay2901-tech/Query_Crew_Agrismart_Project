@@ -1,0 +1,67 @@
+Dataset,Class,Image Count
+PlantVillage,Apple___Apple_scab,630
+PlantVillage,Apple___Black_rot,621
+PlantVillage,Apple___Cedar_apple_rust,275
+PlantVillage,Apple___healthy,1645
+PlantVillage,Blueberry___healthy,1502
+PlantVillage,Cherry_(including_sour)___healthy,854
+PlantVillage,Cherry_(including_sour)___Powdery_mildew,1052
+PlantVillage,Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot,513
+PlantVillage,Corn_(maize)___Common_rust_,1192
+PlantVillage,Corn_(maize)___healthy,1162
+PlantVillage,Corn_(maize)___Northern_Leaf_Blight,985
+PlantVillage,Grape___Black_rot,1180
+PlantVillage,Grape___Esca_(Black_Measles),1383
+PlantVillage,Grape___healthy,423
+PlantVillage,Grape___Leaf_blight_(Isariopsis_Leaf_Spot),1076
+PlantVillage,Orange___Haunglongbing_(Citrus_greening),5507
+PlantVillage,Peach___Bacterial_spot,2297
+PlantVillage,Peach___healthy,360
+PlantVillage,"Pepper,_bell___Bacterial_spot",997
+PlantVillage,"Pepper,_bell___healthy",1478
+PlantVillage,Potato___Early_blight,1000
+PlantVillage,Potato___healthy,152
+PlantVillage,Potato___Late_blight,1000
+PlantVillage,Raspberry___healthy,371
+PlantVillage,Soybean___healthy,5090
+PlantVillage,Squash___Powdery_mildew,1835
+PlantVillage,Strawberry___healthy,456
+PlantVillage,Strawberry___Leaf_scorch,1109
+PlantVillage,Tomato___Bacterial_spot,2127
+PlantVillage,Tomato___Early_blight,1000
+PlantVillage,Tomato___healthy,1591
+PlantVillage,Tomato___Late_blight,1909
+PlantVillage,Tomato___Leaf_Mold,952
+PlantVillage,Tomato___Septoria_leaf_spot,1771
+PlantVillage,Tomato___Spider_mites Two-spotted_spider_mite,1676
+PlantVillage,Tomato___Target_Spot,1404
+PlantVillage,Tomato___Tomato_mosaic_virus,373
+PlantVillage,Tomato___Tomato_Yellow_Leaf_Curl_Virus,5357
+PlantDoc,Apple leaf,91
+PlantDoc,Apple rust leaf,88
+PlantDoc,Apple Scab Leaf,93
+PlantDoc,Bell_pepper leaf,61
+PlantDoc,Bell_pepper leaf spot,71
+PlantDoc,Blueberry leaf,115
+PlantDoc,Cherry leaf,57
+PlantDoc,Corn Gray leaf spot,68
+PlantDoc,Corn leaf blight,191
+PlantDoc,Corn rust leaf,116
+PlantDoc,grape leaf,69
+PlantDoc,grape leaf black rot,64
+PlantDoc,Peach leaf,111
+PlantDoc,Potato leaf early blight,116
+PlantDoc,Potato leaf late blight,105
+PlantDoc,Raspberry leaf,119
+PlantDoc,Soyabean leaf,65
+PlantDoc,Squash Powdery mildew leaf,130
+PlantDoc,Strawberry leaf,96
+PlantDoc,Tomato Early blight leaf,88
+PlantDoc,Tomato leaf,63
+PlantDoc,Tomato leaf bacterial spot,110
+PlantDoc,Tomato leaf late blight,111
+PlantDoc,Tomato leaf mosaic virus,54
+PlantDoc,Tomato leaf yellow virus,76
+PlantDoc,Tomato mold leaf,91
+PlantDoc,Tomato Septoria leaf spot,151
+PlantDoc,Tomato two spotted spider mites leaf,2

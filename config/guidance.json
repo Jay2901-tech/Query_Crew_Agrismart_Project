@@ -84,6 +84,26 @@
     "confidence_threshold": 0.7,
     "guidance": "Increase air circulation and reduce humidity in greenhouses. Apply preventative fungicides."
   },
+  "Tomato___Septoria_leaf_spot": {
+    "label": "Tomato Septoria Leaf Spot",
+    "confidence_threshold": 0.7,
+    "guidance": "Remove lower infected leaves, avoid overhead watering, and apply copper-based or chlorothalonil fungicide."
+  },
+  "Tomato___Target_Spot": {
+    "label": "Tomato Target Spot",
+    "confidence_threshold": 0.7,
+    "guidance": "Improve airflow, remove crop debris, and spray protective fungicides."
+  },
+  "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+    "label": "Tomato Yellow Leaf Curl Virus",
+    "confidence_threshold": 0.7,
+    "guidance": "Control whitefly vectors using yellow sticky traps or insecticidal soaps. Remove and dispose of infected plants."
+  },
+  "Tomato___Tomato_mosaic_virus": {
+    "label": "Tomato Mosaic Virus",
+    "confidence_threshold": 0.7,
+    "guidance": "Disinfect tools, wash hands before handling plants, and remove infected plants to prevent transmission."
+  },
   "Tomato___healthy": {
     "label": "Tomato — Healthy",
     "confidence_threshold": 0.5,

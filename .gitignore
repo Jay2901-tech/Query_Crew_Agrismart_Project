@@ -1,6 +1,6 @@
 # Environment
 .env
-.venv
+.venv/
 env/
 venv/
 ENV/
@@ -30,8 +30,24 @@ share/python-wheels/
 
 # Data and Models
 data/
-plantvillage_master.zip
-temp_plantvillage_extract/
+*.zip
+*.tar.gz
+*.tar
+temp_*/
+
+# Weights and Checkpoints (too large for GitHub, use external storage)
+*.pth
+*.pt
+*.onnx
+*.tflite
+*.h5
+*.bin
+*.ckpt
+
+# Experiment & Baseline Checkpoint Directories
+models/
+baseline/**/model/
+baseline/**/weights/
 
 # IDE and OS
 .vscode/
@@ -40,11 +56,15 @@ temp_plantvillage_extract/
 *.swo
 .DS_Store
 Thumbs.db
+Desktop.ini
 
-# Experiment Tracking
+# Logs and Experiment Tracking
+*.log
 wandb/
 mlruns/
-.agents
+.agents/
+.claude/
+.gemini/
 
 # Streamlit
 .streamlit/secrets.toml

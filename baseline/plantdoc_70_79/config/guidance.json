@@ -1,0 +1,112 @@
+{
+  "Apple___Apple_scab": {
+    "label": "Apple Scab",
+    "confidence_threshold": 0.7,
+    "guidance": "Remove and destroy fallen leaves. Apply fungicides proactively during the primary infection period in spring."
+  },
+  "Apple___Black_rot": {
+    "label": "Apple Black Rot",
+    "confidence_threshold": 0.7,
+    "guidance": "Prune out dead or diseased branches. Remove mummified fruit and treat with appropriate fungicides."
+  },
+  "Apple___healthy": {
+    "label": "Apple — Healthy",
+    "confidence_threshold": 0.5,
+    "guidance": "No disease detected. Continue regular monitoring and maintain good sanitation practices."
+  },
+  "Corn___Common_rust": {
+    "label": "Corn Common Rust",
+    "confidence_threshold": 0.7,
+    "guidance": "Plant rust-resistant hybrids. Apply foliar fungicides if infection is severe early in the season."
+  },
+  "Corn___Gray_leaf_spot": {
+    "label": "Corn Gray Leaf Spot",
+    "confidence_threshold": 0.7,
+    "guidance": "Use crop rotation and tillage to reduce surface residue. Consider resistant hybrids and timely fungicide application."
+  },
+  "Corn___healthy": {
+    "label": "Corn — Healthy",
+    "confidence_threshold": 0.5,
+    "guidance": "No disease detected. Continue regular monitoring."
+  },
+  "Grape___Black_rot": {
+    "label": "Grape Black Rot",
+    "confidence_threshold": 0.7,
+    "guidance": "Remove all mummified fruit and infected tendrils. Maintain an open canopy and apply preventative fungicides."
+  },
+  "Grape___healthy": {
+    "label": "Grape — Healthy",
+    "confidence_threshold": 0.5,
+    "guidance": "No disease detected. Continue routine care."
+  },
+  "Pepper___bell___Bacterial_spot": {
+    "label": "Pepper Bacterial Spot",
+    "confidence_threshold": 0.7,
+    "guidance": "Avoid overhead watering. Apply copper-based bactericides early and use disease-free seeds or transplants."
+  },
+  "Pepper___bell___healthy": {
+    "label": "Pepper — Healthy",
+    "confidence_threshold": 0.5,
+    "guidance": "No disease detected. Maintain optimal watering."
+  },
+  "Potato___Early_blight": {
+    "label": "Potato Early Blight",
+    "confidence_threshold": 0.7,
+    "guidance": "Ensure adequate nitrogen fertility. Apply protective fungicides and practice crop rotation."
+  },
+  "Potato___Late_blight": {
+    "label": "Potato Late Blight",
+    "confidence_threshold": 0.7,
+    "guidance": "Destroy cull piles and volunteer potatoes. Apply systemic fungicides immediately; this spreads rapidly."
+  },
+  "Potato___healthy": {
+    "label": "Potato — Healthy",
+    "confidence_threshold": 0.5,
+    "guidance": "No disease detected. Continue regular monitoring."
+  },
+  "Tomato___Bacterial_spot": {
+    "label": "Tomato Bacterial Spot",
+    "confidence_threshold": 0.7,
+    "guidance": "Avoid overhead irrigation and working with wet plants. Apply copper fungicides and use certified disease-free seed."
+  },
+  "Tomato___Early_blight": {
+    "label": "Tomato Early Blight",
+    "confidence_threshold": 0.7,
+    "guidance": "Remove affected leaves immediately. Avoid overhead watering. Apply copper-based fungicide if spread continues."
+  },
+  "Tomato___Late_blight": {
+    "label": "Tomato Late Blight",
+    "confidence_threshold": 0.7,
+    "guidance": "Remove infected plants immediately to prevent rapid spread. Apply appropriate fungicides."
+  },
+  "Tomato___Leaf_Mold": {
+    "label": "Tomato Leaf Mold",
+    "confidence_threshold": 0.7,
+    "guidance": "Increase air circulation and reduce humidity in greenhouses. Apply preventative fungicides."
+  },
+  "Tomato___Septoria_leaf_spot": {
+    "label": "Tomato Septoria Leaf Spot",
+    "confidence_threshold": 0.7,
+    "guidance": "Remove lower infected leaves, avoid overhead watering, and apply copper-based or chlorothalonil fungicide."
+  },
+  "Tomato___Target_Spot": {
+    "label": "Tomato Target Spot",
+    "confidence_threshold": 0.7,
+    "guidance": "Improve airflow, remove crop debris, and spray protective fungicides."
+  },
+  "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+    "label": "Tomato Yellow Leaf Curl Virus",
+    "confidence_threshold": 0.7,
+    "guidance": "Control whitefly vectors using yellow sticky traps or insecticidal soaps. Remove and dispose of infected plants."
+  },
+  "Tomato___Tomato_mosaic_virus": {
+    "label": "Tomato Mosaic Virus",
+    "confidence_threshold": 0.7,
+    "guidance": "Disinfect tools, wash hands before handling plants, and remove infected plants to prevent transmission."
+  },
+  "Tomato___healthy": {
+    "label": "Tomato — Healthy",
+    "confidence_threshold": 0.5,
+    "guidance": "No disease detected. Continue standard preventative care."
+  }
+}
