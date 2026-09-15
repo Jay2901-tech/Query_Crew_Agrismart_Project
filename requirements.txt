@@ -3,20 +3,38 @@
 # requirements.txt
 #
 # Installation:
-#   Fast (using uv):   uv pip install -r requirements.txt
-#   Standard (pip):   pip install -r requirements.txt
+#   pip install -r requirements.txt
+#   OR (fast Rust installer):
+#   uv pip install -r requirements.txt
+#
+# NOTE: Uses CPU-only PyTorch index to prevent pulling 2 GB+ CUDA bloat.
 # ============================================================
 
+# ------------------------------------------------------------------
 # Web Application UI Framework
-streamlit>=1.30.0
+# ------------------------------------------------------------------
+streamlit==1.63.0
 
+# ------------------------------------------------------------------
 # Machine Learning & Computer Vision Inference
-tensorflow>=2.15.0
-keras>=3.0.0
-numpy>=1.24.0
-pillow>=10.0.0
-opencv-python>=4.8.0
+# ------------------------------------------------------------------
+tensorflow==2.21.0
+keras==3.15.1
+numpy==2.5.3
+pillow==12.3.0
+opencv-python==5.0.0.93
 
-# Multilingual Regional Translation & Voice Speech (gTTS)
-gTTS>=2.5.0
-requests>=2.31.0
+# ------------------------------------------------------------------
+# YOLO Leaf Detection (CPU-only PyTorch build)
+# ------------------------------------------------------------------
+--extra-index-url https://download.pytorch.org/whl/cpu
+ultralytics==8.4.152
+torch==2.14.0+cpu
+torchvision==0.29.0+cpu
+
+# ------------------------------------------------------------------
+# Translation & Voice (Sarvam + gTTS)
+# ------------------------------------------------------------------
+sarvamai==0.1.33
+gTTS==2.5.4
+requests==2.34.2
