@@ -28,9 +28,13 @@ from src.fertilizer import get_recommended_fertilizer
 from src.sustainability import sustainability_score
 
 # ---------------------------------------------------------------------------
-# Sarvam Translation Layer
+# Sarvam Translation Layer (Configurable via ENV / Secrets or fallback)
 # ---------------------------------------------------------------------------
-SARVAM_API_KEY = "sk_49k3bz3i_nIiaXKsIzySEDGkS3rbcYSpD"
+_DEFAULT_SARVAM_KEY = "sk_49k3bz3i_nIiaXKsIzySEDGkS3rbcYSpD"
+SARVAM_API_KEY = os.environ.get(
+    "SARVAM_API_KEY",
+    st.secrets.get("SARVAM_API_KEY", _DEFAULT_SARVAM_KEY) if hasattr(st, "secrets") else _DEFAULT_SARVAM_KEY
+)
 SARVAM_ENDPOINT = "https://api.sarvam.ai/translate"
 
 # Maps our lang codes → Sarvam BCP-47 codes

@@ -4,14 +4,22 @@ An AI-powered smart agriculture advisor dashboard built for smallholder farmers.
 
 ---
 
+## 📹 Video Demonstration & Live Demo
+
+- **Application Live Dashboard**: Deployable on Render / Streamlit Cloud
+- **Video Walkthrough**: A complete video demonstration showcasing image leaf isolation, MobileNetV2 disease diagnosis, Open-Meteo live weather integration, smart irrigation alerts, and multilingual voice audio readout in Hindi & Gujarati.
+
+---
+
 ## 🌟 Key Highlights & Advantages
 
 1. **Multilingual Regional Voice Assistant (Sarvam AI + gTTS)**:
    - Provides complete text and voice audio support in **9 Indian regional languages**: *English, Hindi (हिंदी), Gujarati (ગુજરાતી), Tamil (தமிழ்), Telugu (తెలుగు), Marathi (मराठी), Bengali (বাংলা), Kannada (ಕನ್ನಡ), Punjabi (ਪੰਜਾਬੀ)*.
    - Farmers can listen to their disease diagnosis and irrigation advice in their native language directly on their phone or computer.
 
-2. **Developer Note on API Keys**:
-   > **Note for Evaluators**: To ensure zero setup friction for judges, the Sarvam AI translation API key is temporarily hardcoded in `app.py` for evaluation convenience. After the evaluation period is complete, the API key will be rotated and invalidated.
+2. **Flexible API Key Configuration (Sarvam AI)**:
+   - Configurable via Environment Variable (`export SARVAM_API_KEY="your_api_key"`) or Streamlit secrets (`.streamlit/secrets.toml`).
+   - > **Note for Evaluators**: To ensure zero-friction setup for judges, a fallback evaluation API key is configured in `app.py`. Evaluators can also override it using environment variables. After evaluation, the key will be invalidated.
 
 3. **Deep Learning Disease Classification (PlantVillage Dataset)**:
    - Built on a **MobileNetV2** deep learning architecture trained on the benchmark **PlantVillage dataset**.
@@ -36,6 +44,7 @@ Query_Crew/
 ├── README.md               # Project documentation, highlights, and run instructions
 ├── requirements.txt        # Python package dependencies (uv and pip supported)
 ├── app.py                  # Main Streamlit dashboard UI entry point
+├── render.yaml             # Render.com deployment blueprint
 ├── download_models.py      # Weights downloader script (auto-detects uv or pip)
 ├── agent.py                # Headless autonomous decision loop test runner (Module G)
 ├── debug_pipeline.py       # Diagnostic CV model test script
